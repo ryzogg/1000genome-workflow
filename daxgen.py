@@ -7,7 +7,7 @@ import os
 import csv
 from datetime import datetime
 from pathlib import Path
-
+import time
 from Pegasus.api import *
 
 logging.basicConfig(level=logging.INFO)
@@ -29,7 +29,7 @@ class GenomeWorkflow(object):
 
     # --- Init ----------------------------------------------------------------
     def __init__(self,
-                    datafile: str = 'data.csv',
+                    datafile: str = '/scratch/rzogg/1000genome-workflow/data.csv',
                     dataset: str = '20130502',
                     ind_jobs: int = 250,
                     exec_site: Optional[str] = "condorpool",
@@ -470,7 +470,7 @@ class GenomeWorkflow(object):
 
     # --- Run Workflow -----------------------------------------------------
 
-    def run(self, dir_name, submit=False, wait=False):
+    def run(self, dir_name, submit=True, wait=False):
         try:
             plan_site = [self.exec_site]
             cluster_type = None
@@ -484,7 +484,7 @@ class GenomeWorkflow(object):
                 output_dir=self.local_storage_dir,
                 cleanup="leaf",
                 force=True,
-                submit=submit,
+                submit=True,
                 cluster=cluster_type
                 # verbose=3
             )
@@ -498,6 +498,8 @@ class GenomeWorkflow(object):
 
 if __name__ == "__main__":
     parser = ArgumentParser(description="Pegasus 1000Genome Workflow")
+
+    logging.getLogger("Pegasus").setLevel(logging.WARNING)
 
     parser.add_argument(
         "-s",
@@ -526,7 +528,7 @@ if __name__ == "__main__":
         '--datafile', 
         action='store', 
         dest='datafile', 
-        default='data.csv', 
+        default='/scratch/rzogg/1000genome-workflow/data.csv', 
         help='Data file with list of input data'
     )
     parser.add_argument(
@@ -620,6 +622,8 @@ if __name__ == "__main__":
         args.dir_name = workflow.wid
 
     print("Workflow created in {}/{}".format(workflow.wf_dir, args.dir_name))
-
+    start_time = time.time()
     workflow.run(args.dir_name, submit=args.submit, wait=False)
+    end_time = time.time()
+    print(f"Time taken to execute genometest: {end_time - start_time:.6f}")
 
