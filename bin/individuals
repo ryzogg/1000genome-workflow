@@ -93,7 +93,7 @@ cd $ndir
 outputfile='chr'$c'n-'$counter'-'$stop'.tar.gz'
 tar -zcf ../$outputfile .
 end=$(date +'%s')
-echo "Done in $((end-start)) seconds."
+echo "Individuals: Done in $((end-start)) seconds." | tee -a output.log
 
 cd $prev_dir
 

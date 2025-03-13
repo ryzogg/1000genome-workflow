@@ -1,5 +1,8 @@
 #!/bin/bash
 set -x
+
+start_time=$(date +%s)  # Record start time
+
 c=$1
 
 mkdir -p merged
@@ -7,7 +10,7 @@ mkdir -p merged
 for data in "${@:2}"
 do
   echo "Merging $data..."
-  mkdir -p tmp
+  mkdir -p tmpstart_time=$(date +%s)  # Record start time
   mv $data tmp/
   cd tmp
   tar zxf $data
@@ -24,6 +27,11 @@ cd merged
 outputfile='chr'$c'n.tar.gz'
 echo "Creating merged file $outputfile..."
 tar -zcf ../$outputfile .
+
+end_time=$(date +%s)  # Record end time
+execution_time=$((end_time - start_time))  # Calculate total execution time
+
+echo "Individuals Merge: Script execution time: $execution_time seconds" | tee -a output.log
 
 cd ..
 #rm -rf merged
